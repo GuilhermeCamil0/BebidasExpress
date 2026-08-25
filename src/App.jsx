@@ -1,25 +1,24 @@
 import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import './index.css';
+import ProdutoCard from './components/ProdutoCard';
+import Carrinho from './components/Carrinho';
+import Navbar from './components/Navbar';
 
 function App() {
   const [produtos, setProdutos] = useState([]);
   const [termoPesquisa, setTermoPesquisa] = useState("");
-  const [telaAtual, setTelaAtual] = useState("home"); // 'home' ou 'produtos'
+  const [categoriaAtiva, setCategoriaAtiva] = useState("Todas");
   
-  // ESTADOS DO CARRINHO E NOTIFICAÇÃO
   const [carrinho, setCarrinho] = useState([]);
   const [carrinhoAberto, setCarrinhoAberto] = useState(false);
   const [notificacao, setNotificacao] = useState(null);
-  const [animarBadge, setAnimarBadge] = useState(false);
 
-  // 1. CARREGAR PRODUTOS (Segurança: Baixa APENAS os ativos)
+  const navigate = useNavigate();
+
   async function carregarProdutos() {
-    const { data, error } = await supabase
-      .from('Produtos')
-      .select('*')
-      .eq('ativo', true); 
-      
+    const { data, error } = await supabase.from('Produtos').select('*').eq('ativo', true);
     if (!error) setProdutos(data); 
   }
 
@@ -27,7 +26,6 @@ function App() {
     carregarProdutos();
   }, []);
 
-  // 2. FUNÇÕES DO CARRINHO
   function adicionarAoCarrinho(produto) {
     const itemExistente = carrinho.find(item => item.id === produto.id);
     if (itemExistente) {
@@ -37,10 +35,7 @@ function App() {
     } else {
       setCarrinho([...carrinho, { ...produto, quantidade: 1 }]);
     }
-
-    setNotificacao(`${produto.nome} adicionado ao carrinho!`);
-    setAnimarBadge(true);
-    setTimeout(() => setAnimarBadge(false), 300);
+    setNotificacao(`${produto.nome} adicionado!`);
     setTimeout(() => setNotificacao(null), 2500);
   }
 
@@ -50,132 +45,137 @@ function App() {
 
   function finalizarCompra() {
     if (carrinho.length === 0) return alert("Seu carrinho está vazio!");
-    
-    let texto = "Olá, Bebidas Express! Gostaria de fazer o seguinte pedido:\n\n";
+    let texto = "Olá! Gostaria de fazer o seguinte pedido:\n\n";
     let total = 0;
-    
     carrinho.forEach(item => {
       texto += `${item.quantidade}x ${item.nome} - R$ ${(item.preco * item.quantidade).toFixed(2)}\n`;
       total += (item.preco * item.quantidade);
     });
-    
     texto += `\n*Total: R$ ${total.toFixed(2)}*`;
-    
-    const numeroWhatsApp = "5599999999999"; // <-- Coloque o seu número com DDD
-    const link = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(texto)}`;
-    window.open(link, '_blank');
+    const numeroWhatsApp = "5599999999999"; 
+    window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(texto)}`, '_blank');
   }
 
-  // 3. FILTRAGEM DE PESQUISA
-  const produtosFiltrados = produtos.filter((prod) =>
-    prod.nome.toLowerCase().includes(termoPesquisa.toLowerCase())
-  );
+  function filtrarPorCategoria(categoria) {
+    setCategoriaAtiva(categoria);
+    setTermoPesquisa(""); 
+    navigate('/catalogo');
+  }
+
+  function irParaCatalogoPesquisa() {
+    navigate('/catalogo');
+  }
+
+  const produtosFiltrados = produtos.filter((prod) => {
+    const matchTexto = prod.nome.toLowerCase().includes(termoPesquisa.toLowerCase());
+    const matchCategoria = categoriaAtiva === "Todas" || prod.categoria === categoriaAtiva;
+    return matchTexto && matchCategoria;
+  });
+
+  const quantidadeCarrinho = carrinho.reduce((a, b) => a + b.quantidade, 0);
 
   return (
     <>
-      <header className="top-header">
-        <div className="logo"><i className="fas fa-wine-glass-alt"></i> Bebidas Express</div>
-        <div className="search-bar">
-          <input 
-            type="text" 
-            placeholder="Buscar produtos..." 
-            value={termoPesquisa}
-            onChange={(e) => setTermoPesquisa(e.target.value)}
-          />
-          <button>PESQUISA</button>
-        </div>
-        <div className="user-actions">
-          <span>Minha Conta</span>
-          <div className="cart-icon" onClick={() => setCarrinhoAberto(true)} style={{cursor: 'pointer'}}>
-            <i className="fas fa-shopping-cart"></i>
-            <span className={`badge ${animarBadge ? 'animar' : ''}`}>
-              {carrinho.reduce((acc, item) => acc + item.quantidade, 0)}
-            </span>
-          </div>
-        </div>
-      </header>
+      <Navbar 
+        setCategoriaAtiva={setCategoriaAtiva}
+        setCarrinhoAberto={setCarrinhoAberto}
+        quantidadeCarrinho={quantidadeCarrinho}
+      />
       
-      <nav className="main-nav">
-        <ul>
-          <li><a href="#" onClick={(e) => { e.preventDefault(); setTelaAtual("home"); }} style={{ color: telaAtual === "home" ? "#e67e22" : "#cccccc" }}>HOME</a></li>
-          <li><a href="#" onClick={(e) => { e.preventDefault(); setTelaAtual("produtos"); }} style={{ color: telaAtual === "produtos" ? "#e67e22" : "#cccccc" }}>PRODUTOS</a></li>
-        </ul>
-      </nav>
-
-      {telaAtual === "home" && (
-        <section className="hero">
-          <div className="hero-content">
-            <h3>VIVA O NOVO</h3>
-            <h1>O AGORA !</h1>
-            <p>Entregas para o sítio Garrota e próximos!</p>
-            <a href="#" className="btn-orange" onClick={(e) => { e.preventDefault(); setTelaAtual("produtos"); }}>CLIQUE E CONFIRA</a>
-          </div>
-        </section>
-      )}
-
-      <section id="produtos" className="produtos-section">
-        <h2>{telaAtual === "home" ? "Nossos Destaques" : "Nosso Catálogo Completo"}</h2>
-        <div className="grid-produtos">
-          {produtos.length === 0 ? (
-            <h3>Carregando produtos fresquinhos...</h3>
-          ) : produtosFiltrados.length === 0 ? (
-            <h3>Nenhuma bebida encontrada com esse nome :(</h3>
-          ) : (
-            produtosFiltrados.map((prod) => (
-              <div className="cartao-produto" key={prod.id}>
-                <img src={prod.imagem_url} alt={prod.nome} />
-                <h4>{prod.nome}</h4>
-                <p className="preco">R$ {prod.preco.toFixed(2)}</p>
-                <button className="btn-comprar" onClick={() => adicionarAoCarrinho(prod)}>
-                  Adicionar <i className="fas fa-cart-plus"></i>
-                </button>
+      <Routes>
+        {/* ROTA DA HOME */}
+        <Route path="/" element={
+          <>
+            <section className="hero-modern">
+              <h1>Descubra a Bebida Perfeita<br />Para o Seu Momento</h1>
+              <div className="search-pill">
+                <input 
+                  type="text" 
+                  placeholder="O que você deseja beber hoje? (ex: Cerveja, Vinho)" 
+                  value={termoPesquisa}
+                  onChange={(e) => setTermoPesquisa(e.target.value)}
+                />
+                <button onClick={irParaCatalogoPesquisa}>Pesquisar</button>
               </div>
-            ))
-          )}
-        </div>
-      </section>
+            </section>
 
-      {/* NOTIFICAÇÃO ANIMADA (TOAST) */}
-      {notificacao && (
-        <div className="toast-notificacao">
-          <i className="fas fa-check-circle" style={{ fontSize: '18px' }}></i>
-          {notificacao}
-        </div>
-      )}
-
-      {/* MODAL DO CARRINHO */}
-      {carrinhoAberto && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }}>
-          <div style={{ width: '350px', backgroundColor: '#fff', height: '100%', padding: '20px', display: 'flex', flexDirection: 'column', color: '#333' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-              <h2 style={{margin: 0, color: '#333'}}>Seu Carrinho</h2>
-              <button onClick={() => setCarrinhoAberto(false)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#ff4444' }}>✖</button>
+            <div className="floating-categories">
+              <div className="category-item" onClick={() => filtrarPorCategoria("Cervejas")}><div className="category-icon">🍺</div> Cervejas</div>
+              <div className="category-item" onClick={() => filtrarPorCategoria("Vinhos")}><div className="category-icon">🍷</div> Vinhos</div>
+              <div className="category-item" onClick={() => filtrarPorCategoria("Destilados")}><div className="category-icon">🥃</div> Destilados</div>
+              <div className="category-item" onClick={() => filtrarPorCategoria("Sem Álcool")}><div className="category-icon">🧊</div> Sem Álcool</div>
             </div>
+
+            <h2 className="section-title">Nossos Destaques</h2>
             
-            <div style={{ flex: 1, overflowY: 'auto', marginTop: '20px' }}>
-              {carrinho.length === 0 ? (
-                <p style={{textAlign: 'center', color: '#888', marginTop: '50px'}}>O carrinho está vazio.</p>
+            <section className="grid-modern">
+              {produtos.slice(0, 4).map((prod) => (
+                <ProdutoCard 
+                  key={prod.id} 
+                  produto={prod} 
+                  adicionarAoCarrinho={adicionarAoCarrinho} 
+                />
+              ))}
+            </section>
+          </>
+        } />
+
+        {/* ROTA DO CATÁLOGO */}
+        <Route path="/catalogo" element={
+          <>
+            <div style={{ maxWidth: '600px', margin: '40px auto 0', paddingBottom: '20px', paddingLeft: '20px', paddingRight: '20px', textAlign: 'center' }}>
+               <div className="search-pill" style={{ boxShadow: '0 4px 15px rgba(0,0,0,0.1)', border: '1px solid #ddd', marginBottom: '15px' }}>
+                 <input 
+                   type="text" 
+                   placeholder="Buscar no catálogo..." 
+                   value={termoPesquisa}
+                   onChange={(e) => { setTermoPesquisa(e.target.value); setCategoriaAtiva("Todas"); }}
+                 />
+               </div>
+               {categoriaAtiva !== "Todas" && (
+                 <button 
+                   onClick={() => setCategoriaAtiva("Todas")}
+                   style={{ background: '#6B1C2A', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', fontSize: '0.9rem' }}
+                 >
+                   Filtro ativo: {categoriaAtiva} ✕
+                 </button>
+               )}
+            </div>
+
+            <h2 className="section-title">
+              {termoPesquisa ? "Resultados da Pesquisa" : (categoriaAtiva !== "Todas" ? `Categoria: ${categoriaAtiva}` : "Catálogo Completo")}
+            </h2>
+            
+            <section className="grid-modern">
+              {produtosFiltrados.length === 0 ? (
+                <h3 style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#666' }}>Nenhuma bebida encontrada...</h3>
               ) : (
-                carrinho.map(item => (
-                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
-                    <div>
-                      <h4 style={{ margin: 0, color: '#333' }}>{item.nome}</h4>
-                      <small style={{color: '#666'}}>{item.quantidade}x de R$ {item.preco.toFixed(2)}</small>
-                    </div>
-                    <button onClick={() => removerDoCarrinho(item.id)} style={{ background: '#ff4444', color: '#fff', border: 'none', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer' }}>Remover</button>
-                  </div>
+                produtosFiltrados.map((prod) => (
+                  <ProdutoCard 
+                    key={prod.id} 
+                    produto={prod} 
+                    adicionarAoCarrinho={adicionarAoCarrinho} 
+                  />
                 ))
               )}
-            </div>
+            </section>
+          </>
+        } />
+      </Routes>
 
-            <div style={{ borderTop: '2px solid #eee', paddingTop: '20px', marginTop: 'auto' }}>
-              <h3 style={{color: '#333'}}>Total: R$ {carrinho.reduce((acc, item) => acc + (item.preco * item.quantidade), 0).toFixed(2)}</h3>
-              <button onClick={finalizarCompra} style={{ width: '100%', padding: '15px', fontSize: '16px', backgroundColor: '#25D366', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>
-                <i className="fab fa-whatsapp"></i> Finalizar no WhatsApp
-              </button>
-            </div>
-          </div>
+      {notificacao && (
+        <div style={{ position: 'fixed', bottom: 30, right: 30, background: '#6B1C2A', color: 'white', padding: '15px 25px', borderRadius: '50px', boxShadow: '0 10px 30px rgba(0,0,0,0.2)', zIndex: 2000, fontWeight: 'bold' }}>
+          ✓ {notificacao}
         </div>
+      )}
+
+      {carrinhoAberto && (
+        <Carrinho 
+          carrinho={carrinho}
+          setCarrinhoAberto={setCarrinhoAberto}
+          removerDoCarrinho={removerDoCarrinho}
+          finalizarCompra={finalizarCompra}
+        />
       )}
     </>
   );
