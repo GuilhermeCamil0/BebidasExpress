@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 :root {
   --bg-color: #F9F8F3;
@@ -89,8 +89,7 @@ body {
 /* --- HERO SECTION (Área Principal) --- */
 .hero-modern {
   height: 85vh;
-  /* Imagem da taça de vinho super elegante */
-  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=1920&auto=format&fit=crop');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)), url('/fundo-principal.png');
   background-size: cover;
   background-position: center;
   display: flex;
@@ -150,38 +149,70 @@ body {
   background-color: var(--primary-hover);
 }
 
-/* --- BARRA FLUTUANTE (Categorias) --- */
-.floating-categories {
-  background: var(--white);
+/* --- VISUAL MODERNO, CLEAN E SEM EMOJIS (Categorias Flutuantes) --- */
+.floating-container {
+  background: #ffffff;
+  border-radius: 16px; 
+  padding: 30px 40px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.04); 
+  margin: -60px auto 50px; 
   max-width: 900px;
-  margin: -40px auto 3rem;
-  padding: 1.5rem 2rem;
-  border-radius: var(--radius-pill);
-  display: flex;
-  justify-content: space-around;
-  box-shadow: var(--shadow-soft);
   position: relative;
-  z-index: 5;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  font-family: 'Poppins', sans-serif; 
+}
+
+.floating-title {
+  font-size: 0.8rem;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin: 0;
+  font-weight: 500;
+}
+
+.floating-categories {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .category-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
-  color: var(--text-dark);
+  padding: 10px 24px;
+  background: #f4f4f5; 
+  border-radius: 8px; 
   cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  color: #3f3f46; 
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  border: none;
 }
 
-.category-icon {
-  background: var(--bg-color);
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 1.2rem;
+.category-item:hover {
+  background: #ffffff;
+  color: #18181b;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.category-item.all-categories {
+  background: #6B1C2A;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.category-item.all-categories:hover {
+  background: #501520; 
+  color: #ffffff;
+  box-shadow: 0 6px 15px rgba(107, 28, 42, 0.25);
 }
 
 /* --- GRID DE PRODUTOS --- */
@@ -268,10 +299,10 @@ body {
   justify-content: center;
   width: 42px;
   height: 42px;
-  border: 2px solid #D4AF37; /* Dourado premium */
+  border: 2px solid #D4AF37; 
   color: #D4AF37;
   font-size: 1.2rem;
-  border-radius: 6px; /* Canto levemente arredondado como na sua foto */
+  border-radius: 6px; 
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
@@ -290,8 +321,8 @@ body {
 }
 
 .logo-subtitle {
-  color: #D4AF37; /* Dourado no subtítulo para dar contraste */
+  color: #D4AF37; 
   font-size: 0.75rem;
   font-weight: 400;
-  letter-spacing: 5px; /* Espaçamento largo igual à referência */
+  letter-spacing: 5px; 
 }

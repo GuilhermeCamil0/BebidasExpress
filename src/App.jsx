@@ -99,11 +99,32 @@ function App() {
               </div>
             </section>
 
-            <div className="floating-categories">
-              <div className="category-item" onClick={() => filtrarPorCategoria("Cervejas")}><div className="category-icon">🍺</div> Cervejas</div>
-              <div className="category-item" onClick={() => filtrarPorCategoria("Vinhos")}><div className="category-icon">🍷</div> Vinhos</div>
-              <div className="category-item" onClick={() => filtrarPorCategoria("Destilados")}><div className="category-icon">🥃</div> Destilados</div>
-              <div className="category-item" onClick={() => filtrarPorCategoria("Sem Álcool")}><div className="category-icon">🧊</div> Sem Álcool</div>
+            {/* NOVO VISUAL DAS CATEGORIAS - MODERNO E CLEAN */}
+            <div className="floating-container">
+              <h3 className="floating-title">Categorias</h3>
+              
+              <div className="floating-categories">
+                <div className="category-item" onClick={() => filtrarPorCategoria("Cervejas")}>
+                  Cervejas
+                </div>
+                
+                <div className="category-item" onClick={() => filtrarPorCategoria("Vinhos")}>
+                  Vinhos
+                </div>
+                
+                <div className="category-item" onClick={() => filtrarPorCategoria("Destilados")}>
+                  Destilados
+                </div>
+                
+                <div className="category-item" onClick={() => filtrarPorCategoria("Sem Álcool")}>
+                  Sem Álcool
+                </div>
+                
+                {/* BOTÃO ESPECIAL PARA VER TODAS */}
+                <div className="category-item all-categories" onClick={() => { setCategoriaAtiva("Todas"); navigate('/catalogo'); }}>
+                  Ver Todas →
+                </div>
+              </div>
             </div>
 
             <h2 className="section-title">Nossos Destaques</h2>
