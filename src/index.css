@@ -326,3 +326,159 @@ body {
   font-weight: 400;
   letter-spacing: 5px; 
 }
+
+/* ========================================================= */
+/* --- FASE 2: RESPONSIVIDADE PREMIUM (ESTILO APLICATIVO) --- */
+/* ========================================================= */
+
+@media (max-width: 768px) {
+  /* 1. Navbar tipo App (Logo à esquerda, Carrinho à direita) */
+  .navbar {
+    padding: 1.2rem 1.5rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+  }
+
+  .logo-premium {
+    gap: 8px;
+  }
+  
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+  
+  .logo-title {
+    font-size: 1.2rem;
+  }
+  
+  .logo-subtitle {
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+  }
+
+  .cart-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  /* Joga os links para a linha de baixo do menu */
+  .nav-links {
+    width: 100%;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 15px;
+    order: 3; 
+  }
+
+  .nav-links a {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  /* 2. Área Principal (Hero) */
+  .hero-modern {
+    padding-top: 110px; 
+    height: 70vh; 
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+  }
+
+  .hero-modern h1 {
+    font-size: 1.8rem;
+    line-height: 1.3;
+    margin-bottom: 1.5rem;
+    padding: 0 10px;
+  }
+
+  /* 3. Pesquisa Elegante (Pílula unificada para mobile) */
+  .search-pill {
+    flex-direction: row;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50px;
+    padding: 6px;
+    width: 100%;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    gap: 0;
+  }
+
+  .search-pill input {
+    background: transparent;
+    padding: 10px 15px;
+    border-radius: 50px 0 0 50px;
+    text-align: left; 
+    box-shadow: none;
+    font-size: 0.85rem; 
+    width: 100%;
+  }
+
+  .search-pill button {
+    width: auto;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    box-shadow: none;
+    white-space: nowrap; 
+  }
+
+  /* 4. Categorias (Caixas menores, 2 por linha) */
+  .floating-container {
+    margin: -40px 15px 30px;
+    padding: 20px 15px;
+    border-radius: 16px;
+  }
+
+  .floating-categories {
+    gap: 8px;
+  }
+
+  .category-item {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    flex: 1 1 calc(50% - 8px); 
+    text-align: center;
+    justify-content: center;
+  }
+
+  .category-item.all-categories {
+    flex: 1 1 100%; 
+  }
+
+  /* 5. Grelha de Produtos: Estilo Zé Delivery / iFood (Lado a lado) */
+  .grid-modern {
+    padding: 0 15px;
+    gap: 12px;
+    grid-template-columns: repeat(2, 1fr); 
+  }
+
+  .card-modern {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .card-modern img {
+    height: 120px;
+    border-radius: 12px;
+  }
+
+  .card-info h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+  }
+
+  .card-info .price {
+    font-size: 1.05rem;
+  }
+
+  .btn-add-modern {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+}
