@@ -327,6 +327,33 @@ body {
   letter-spacing: 5px; 
 }
 
+/* --- ESTADO DE CARREGAMENTO (LOADING) --- */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  grid-column: 1 / -1; /* Força o loading a ocupar a linha inteira da grelha */
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.spinner {
+  width: 45px;
+  height: 45px;
+  border: 4px solid rgba(107, 28, 42, 0.15); /* Cor de fundo clarinha */
+  border-left-color: var(--primary); /* Cor principal da marca a girar */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 /* ========================================================= */
 /* --- FASE 2: RESPONSIVIDADE PREMIUM (ESTILO APLICATIVO) --- */
 /* ========================================================= */

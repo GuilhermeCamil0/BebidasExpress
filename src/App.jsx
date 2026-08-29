@@ -14,12 +14,17 @@ function App() {
   const [carrinho, setCarrinho] = useState([]);
   const [carrinhoAberto, setCarrinhoAberto] = useState(false);
   const [notificacao, setNotificacao] = useState(null);
+  
+  // NOVO: Controle de estado de carregamento
+  const [carregando, setCarregando] = useState(true);
 
   const navigate = useNavigate();
 
   async function carregarProdutos() {
+    setCarregando(true); // Começa a carregar
     const { data, error } = await supabase.from('Produtos').select('*').eq('ativo', true);
     if (!error) setProdutos(data); 
+    setCarregando(false); // Termina de carregar, independentemente se deu erro ou não
   }
 
   useEffect(() => {
@@ -99,44 +104,36 @@ function App() {
               </div>
             </section>
 
-            {/* NOVO VISUAL DAS CATEGORIAS - MODERNO E CLEAN */}
             <div className="floating-container">
               <h3 className="floating-title">Categorias</h3>
               
               <div className="floating-categories">
-                <div className="category-item" onClick={() => filtrarPorCategoria("Cervejas")}>
-                  Cervejas
-                </div>
-                
-                <div className="category-item" onClick={() => filtrarPorCategoria("Vinhos")}>
-                  Vinhos
-                </div>
-                
-                <div className="category-item" onClick={() => filtrarPorCategoria("Destilados")}>
-                  Destilados
-                </div>
-                
-                <div className="category-item" onClick={() => filtrarPorCategoria("Sem Álcool")}>
-                  Sem Álcool
-                </div>
-                
-                {/* BOTÃO ESPECIAL PARA VER TODAS */}
-                <div className="category-item all-categories" onClick={() => { setCategoriaAtiva("Todas"); navigate('/catalogo'); }}>
-                  Ver Todas →
-                </div>
+                <div className="category-item" onClick={() => filtrarPorCategoria("Cervejas")}>Cervejas</div>
+                <div className="category-item" onClick={() => filtrarPorCategoria("Vinhos")}>Vinhos</div>
+                <div className="category-item" onClick={() => filtrarPorCategoria("Destilados")}>Destilados</div>
+                <div className="category-item" onClick={() => filtrarPorCategoria("Sem Álcool")}>Sem Álcool</div>
+                <div className="category-item all-categories" onClick={() => { setCategoriaAtiva("Todas"); navigate('/catalogo'); }}>Ver Todas →</div>
               </div>
             </div>
 
             <h2 className="section-title">Nossos Destaques</h2>
             
             <section className="grid-modern">
-              {produtos.slice(0, 4).map((prod) => (
-                <ProdutoCard 
-                  key={prod.id} 
-                  produto={prod} 
-                  adicionarAoCarrinho={adicionarAoCarrinho} 
-                />
-              ))}
+              {/* LÓGICA DE CARREGAMENTO APLICADA AQUI */}
+              {carregando ? (
+                <div className="loading-container">
+                  <div className="spinner"></div>
+                  <p>A preparar os destaques...</p>
+                </div>
+              ) : (
+                produtos.slice(0, 4).map((prod) => (
+                  <ProdutoCard 
+                    key={prod.id} 
+                    produto={prod} 
+                    adicionarAoCarrinho={adicionarAoCarrinho} 
+                  />
+                ))
+              )}
             </section>
           </>
         } />
@@ -168,7 +165,13 @@ function App() {
             </h2>
             
             <section className="grid-modern">
-              {produtosFiltrados.length === 0 ? (
+              {/* LÓGICA DE CARREGAMENTO APLICADA AQUI TAMBÉM */}
+              {carregando ? (
+                <div className="loading-container">
+                  <div className="spinner"></div>
+                  <p>A buscar catálogo...</p>
+                </div>
+              ) : produtosFiltrados.length === 0 ? (
                 <h3 style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#666' }}>Nenhuma bebida encontrada...</h3>
               ) : (
                 produtosFiltrados.map((prod) => (
